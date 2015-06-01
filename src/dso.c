@@ -4,11 +4,14 @@
 #include "dso.h"
 #include "Key.h"
 #include "tft.h"
-#include "graphic.h"
 #include "systick.h"
+#include "fsmc_sram.h"
+#include <stdio.h>
+
 
 #define DSO_VER	 "V0.1"
 #define ATT_COUNT	6	  /* g_DSO.Ch1Attenuation = 23 : (1) 28 === 1V  (1:1) */
+#define pgm_read_byte(addr) (*(const unsigned char *)(addr))
 
 /* g_DSO.TimeBaseId */
 const uint32_t g_TimeTable[] =
@@ -204,38 +207,38 @@ void DSO_SampleRate(uint32_t freq)
 *******************************************************************************/
 void Display_Frame(void)
 {
-  uint16_t x, y;
+	uint16_t x, y;
 
-  //TFT_CLEAR(GUI_BLACK);
-  //GUI_ClearRect(9 + 1, 19 + 1, 9 + 302 - 1 , 19 + 202 -1 );
-  //TFT_DRAW_FULL_RECTANGLE_NO_FRAME(9+1, 19+1, 9+302-1, 19+202-1, GUI_BLACK);
-  TFT_DRAW_FULL_RECTANGLE_IN_FRAME(9, 19, 302, 202, GUI_WHITE, GUI_BLACK);
- // TFT_DRAW_RECTANGLE(9, 19, 302 ,202 , GUI_WHITE);
-						   
-  for (x = 0; x < 13; x++)
-  {
+	TFT_SRAM_BUFFER_CLEAR(GUI_BLACK);
+	TFT_SRAM_BUFFER_DRAW_RECTANGLE(9, 19, 302 , 202 , GUI_WHITE);
+
+	for (x = 0; x < 13; x++)
+	{
 	 for (y = 0; y < 41; y++)
 	 {
-		 TFT_SET_POINT(10 + (x * 25), 20 + (y * 5), GUI_WHITE);
+		 TFT_SRAM_BUFFER_SET_POINT(10 + (x * 25), 20 + (y * 5),GUI_WHITE);
 	 }
-  }
-  for (y = 0; y < 9; y++)
-  {
+	}
+
+	for (y = 0; y < 9; y++)
+	{
 	 for (x = 0; x < 61; x++)
 	 {
-		 TFT_SET_POINT(10 + (x * 5), 20 + (y * 25), GUI_WHITE);
+		 TFT_SRAM_BUFFER_SET_POINT(10 + (x * 5), 20 + (y * 25),GUI_WHITE);
 	 }
-  }
-  for (y = 0; y < 41; y++)
-  {	 
-	 TFT_SET_POINT(9 + (6 * 25), 20 + (y * 5), GUI_WHITE);
-	 TFT_SET_POINT(11 + (6 * 25), 20 + (y * 5), GUI_WHITE);
-  }
-  for (x = 0; x < 61; x++)
-  {	 
-	 TFT_SET_POINT(10 + (x * 5), 19 + (4 * 25), GUI_WHITE);
-	 TFT_SET_POINT(10 + (x * 5), 21 + (4 * 25), GUI_WHITE);
-  }
+	}
+
+	for (y = 0; y < 41; y++)
+	{
+	  TFT_SRAM_BUFFER_SET_POINT(9 + (6 * 25), 20 + (y * 5),GUI_WHITE);
+	  TFT_SRAM_BUFFER_SET_POINT(11 + (6 * 25), 20 + (y * 5),GUI_WHITE);
+	}
+
+	for (x = 0; x < 61; x++)
+	{
+	  TFT_SRAM_BUFFER_SET_POINT(10 + (x * 5), 19 + (4 * 25),GUI_WHITE);
+	  TFT_SRAM_BUFFER_SET_POINT(10 + (x * 5), 21 + (4 * 25),GUI_WHITE);
+	}
 }
 
 /*******************************************************************************
@@ -247,7 +250,7 @@ void LCD_DrawPoints( uint16_t *x, uint16_t *y, uint16_t Size, uint16_t color )
 
 	for (i = 0 ; i < Size - 1; i++)
 	{
-		TFT_DRAW_LINE( x[i], y[i], x[i + 1], y[i + 1] ,color );
+		TFT_SRAM_BUFFER_DRAW_LINE( x[i], y[i], x[i + 1], y[i + 1] ,color );
 	}
 }
 
@@ -258,7 +261,7 @@ void Display_CH_Info(void)
 {
 	char buf[32];
 
-	TFT_DISPLAY_TEXT_NO_BK(10, 2, DSO_VER, GUI_WHITE);
+	TFT_SRAM_BUFFER_DISPLAY_TEXT_NO_BK(10, 2, DSO_VER, GUI_WHITE);
 
 	if (g_DSO.Ch1DC == 1)
 	{
@@ -280,11 +283,11 @@ void Display_CH_Info(void)
 
 	if (g_DSO.ActiveCH == 1)
 	{
-		TFT_DISPLAY_TEXT_IN_BK(10, 224, buf, GUI_WHITE,GUI_MAGENTA);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(10, 224, buf, GUI_WHITE,GUI_MAGENTA);
 	}
 	else
 	{
-		TFT_DISPLAY_TEXT_IN_BK(10, 224, buf, GUI_WHITE,GUI_BLACK);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(10, 224, buf, GUI_WHITE,GUI_BLACK);
 	}
 
 	if (g_DSO.Ch2DC == 1)
@@ -306,11 +309,11 @@ void Display_CH_Info(void)
 	}
 	if (g_DSO.ActiveCH == 2)
 	{
-		TFT_DISPLAY_TEXT_IN_BK(120, 224, buf, GUI_WHITE,GUI_MAGENTA);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(120, 224, buf, GUI_WHITE,GUI_MAGENTA);
 	}
 	else
 	{
-		TFT_DISPLAY_TEXT_IN_BK(120, 224, buf, GUI_WHITE,GUI_BLACK);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(120, 224, buf, GUI_WHITE,GUI_BLACK);
 	}
 
 	if (g_DSO.TimeBase < 1000)
@@ -325,27 +328,27 @@ void Display_CH_Info(void)
 	{
 		sprintf(buf, "Time %3ds ", (int)(g_DSO.TimeBase / 1000000));
 	}
-	TFT_DISPLAY_TEXT_IN_BK(230, 224, buf, GUI_WHITE,GUI_BLACK);
+	TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(230, 224, buf, GUI_WHITE,GUI_BLACK);
 
 	if (g_DSO.AdjustMode == 1)
 	{
-		TFT_DISPLAY_TEXT_IN_BK(180, 2, "M:1", GUI_WHITE,GUI_BLACK);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(180, 2, "M:1", GUI_WHITE,GUI_BLACK);
 	}
 	else
 	{
-		TFT_DISPLAY_TEXT_IN_BK(180, 2, "M:0", GUI_WHITE,GUI_BLACK);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(180, 2, "M:0", GUI_WHITE,GUI_BLACK);
 	}
 
 	if(g_DSO.HoldEn == 1) {
 
-		TFT_DISPLAY_TEXT_IN_BK(250, 2, "H:1", GUI_WHITE,GUI_BLACK);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(250, 2, "H:1", GUI_WHITE,GUI_BLACK);
 	} else {
 
-		TFT_DISPLAY_TEXT_IN_BK(250, 2, "H:0", GUI_WHITE,GUI_BLACK);
+		TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(250, 2, "H:0", GUI_WHITE,GUI_BLACK);
 	}
 
 	sprintf(buf, "Freq:%7dHz",	g_DSO.SampleFreq);
-	TFT_DISPLAY_TEXT_IN_BK(55, 2, buf, GUI_WHITE,GUI_BLACK);
+	TFT_SRAM_BUFFER_DISPLAY_TEXT_IN_BK(55, 2, buf, GUI_WHITE,GUI_BLACK);
 }
 
 /*******************************************************************************
@@ -539,7 +542,7 @@ void DSO_Run(void)
 	 		Display_DSO();
 	 		Start_ADC();
 	 	}
-	 delay_ms(20);
+	 delay_ms(200);
 	 if (key > 0)
 	 {
 		switch (key)
@@ -695,7 +698,6 @@ void DSO_Run(void)
 *******************************************************************************/		
 void Display_DSO(void)
 {
-	Display_CH_Info();
     _DrawDSO();
 }
 
@@ -709,6 +711,8 @@ void _Draw(void * p)
 
   LCD_DrawPoints( (void*)pParam->CH1x, (void*)pParam->CH1y, 300, GUI_LIGHTYELLOW);
   LCD_DrawPoints( (void*)pParam->CH2x, (void*)pParam->CH2y, 300, GUI_LIGHTMAGENTA);
+  Display_CH_Info();
+  TFT_SRAM_BUFFER_TO_LCD();
 }
 /*******************************************************************************
 * Function Name  : _DrawDSO

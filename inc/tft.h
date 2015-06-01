@@ -1,4 +1,3 @@
-
 #ifndef __TFT_H
 #define __TFT_H
 
@@ -70,5 +69,23 @@ uint16_t TFT_GET_POINT(uint16_t Xpos,uint16_t Ypos);
 void TFT_SET_POINT(uint16_t Xpos,uint16_t Ypos,uint16_t point);
 void PutCharacterNoBackground( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor);
 void PutCharacterInBackground( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
+void TFT_DRAW_LINE( uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2 , uint16_t color );
+void TFT_DRAW_RECTANGLE(uint16_t Xpos, uint16_t Ypos, uint16_t Width , uint16_t Height , uint16_t col );
+void TFT_DRAW_FULL_RECTANGLE_NO_FRAME(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color);
+void TFT_DRAW_CIRCLE(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color);
+void TFT_DISPLAY_TEXT_IN_BK(uint16_t Xpos, uint16_t Ypos, char *str, uint16_t TextColor, uint16_t BackgroundColor);
+void TFT_DISPLAY_TEXT_NO_BK(uint16_t Xpos, uint16_t Ypos, char *str, uint16_t TextColor);
+void TFT_DRAW_FULL_RECTANGLE_IN_FRAME(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t FrameColor, uint16_t Background_Color);
+
+void TFT_SRAM_BUFFER_CLEAR(uint16_t Color);
+void TFT_SRAM_BUFFER_SET_POINT(uint16_t Xpos,uint16_t Ypos,uint16_t point);
+void TFT_SRAM_BUFFER_DRAW_LINE( uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2 , uint16_t color );
+void TFT_SRAM_BUFFER_DRAW_RECTANGLE(uint16_t Xpos, uint16_t Ypos, uint16_t Width , uint16_t Height , uint16_t col);
+void TFT_SRAM_BUFFER_PUT_CHARACTER_NO_BACKGROUND( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor );
+void TFT_SRAM_BUFFER_PUT_CHARACTER_IN_BACKGROUND( uint16_t Xpos, uint16_t Ypos, uint8_t ASCI, uint16_t charColor, uint16_t bkColor );
+uint16_t TFT_SRAM_BUFFER_GET_POINT(uint16_t Xpos,uint16_t Ypos);
+void TFT_SRAM_BUFFER_DRAW_FULL_RECTANGLE_NO_FRAME(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height, uint16_t color);
+void TFT_SRAM_BUFFER_DRAW_CIRCLE(uint16_t Xpos, uint16_t Ypos, uint16_t radius, uint16_t color);
+void TFT_SRAM_BUFFER_TO_LCD();
 
 #endif
