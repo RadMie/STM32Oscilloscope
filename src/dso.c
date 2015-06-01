@@ -1,13 +1,12 @@
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "stm32f10x.h"
 #include "dso.h"
-#include "Key.h"
+#include "key.h"
 #include "tft.h"
 #include "systick.h"
 #include "fsmc_sram.h"
-#include <stdio.h>
-
 
 #define DSO_VER	 "V0.1"
 #define ATT_COUNT	6	  /* g_DSO.Ch1Attenuation = 23 : (1) 28 === 1V  (1:1) */
@@ -527,169 +526,131 @@ void Start_ADC(void)
 *******************************************************************************/
 void DSO_Run(void)
 {
-  uint8_t key;
+	bool statusJoyUp,statusJoyDown,statusJoyLeft,statusJoyRight, statusJoySel, statusJoyTamper, statusJoyUser, statusJoyWakeup;
 
-  //DSO_Configuration();
-  //DSO_Initializtion();	 /* ADC,TIM,DMA */
   delay_ms(100);
   for(;;)
   {
-	 KeyPro();
-	 key = GetKey();
 	 if ( g_DSO.HoldEn == 0 )
-	 	{
-	 		Stop_ADC();
-	 		Display_DSO();
-	 		Start_ADC();
-	 	}
-	 delay_ms(200);
-	 if (key > 0)
-	 {
-		switch (key)
-		{
-		   case  KEY_DOWN_TAMPER:
-				 if (g_DSO.ActiveCH == 1)
-				 {
-					 g_DSO.ActiveCH = 2;
-				 }
-				 else
-				 {
-					 g_DSO.ActiveCH = 1;
-				 }
-				 if (g_DSO.HoldEn == 1)
-				 	{
-				 	   Display_DSO();
-				 	}
-				 break;
+	{
+		Stop_ADC();
+		Display_DSO();
+		Start_ADC();
+	}
+	 delay_ms(100);
 
-		   case  KEY_DOWN_WAKEUP:
-				 break;
-
-		   case  KEY_DOWN_USER:
-				 if ( g_DSO.HoldEn == 0 )
-				 {
-					 g_DSO.HoldEn = 1;
-					 g_DSO.TimeBaseIdHold = g_DSO.TimeBaseId;	
-                     Stop_ADC();
+	 if(KeyJoyUpPressed()) {
+		 if(statusJoyUp) {
+			 if (g_DSO.ActiveCH == 1){
+				if (g_DSO.AdjustMode == 0){
+					Adjust_DSO(1, 1);
+				} else {
+					g_DSO.Ch1VOffset -= 5;
+				}
+			 } else {
+				 if (g_DSO.AdjustMode == 0) {
+					Adjust_DSO(2, 1);
+				 } else {
+					g_DSO.Ch2VOffset -= 5;
 				 }
-				 else
-				 {
-					 g_DSO.HoldEn = 0;
-					 Start_ADC();				
-				 }
-				 if (g_DSO.HoldEn == 1)
-				 	{
-				 	   Display_DSO();
-				 	}
-				 break;
-
-		   case  KEY_DOWN_JOY_LEFT:
-				 if (g_DSO.HoldEn == 0)
-				 {
-					 Dec_SampleFreq();
-					if (g_DSO.HoldEn == 1)
-					 	{
-					 	   Display_DSO();
-					 	}
-				 }
-				 else
-				 {
-
-				 }
-				 break;
-
-		   case  KEY_DOWN_JOY_RIGHT:
-				 if (g_DSO.HoldEn == 0)
-				 {
-					 Inc_SampleFreq();
-					 if (g_DSO.HoldEn == 1)
-					 	{
-					 	   Display_DSO();
-					 	}
-				 }
-				 else
-				 {
-
-				 }
-				 break;
-
-		   case  KEY_DOWN_JOY_OK:
-				 if (g_DSO.AdjustMode == 0)
-				 {
-					 g_DSO.AdjustMode = 1;
-				 }
-				 else
-				 {
-					 g_DSO.AdjustMode = 0;
-				 }
-				 if (g_DSO.HoldEn == 1)
-				 	{
-				 	   Display_DSO();
-				 	}
-				 break;
-
-		   case  KEY_DOWN_JOY_UP:
-				 if (g_DSO.ActiveCH == 1)
-				 {
-					if (g_DSO.AdjustMode == 0)
-					{
-						Adjust_DSO(1, 1);
-					}
-					else
-					{
-						g_DSO.Ch1VOffset -= 5;
-					}
-				 }
-				 else
-				 {
-					 if (g_DSO.AdjustMode == 0)
-					 {
-						Adjust_DSO(2, 1);
-					 }
-					 else
-					 {
-						g_DSO.Ch2VOffset -= 5;
-					 }
-				 }
-				 if (g_DSO.HoldEn == 1)
-				 	{
-				 	   Display_DSO();
-				 	}
-				 break;
-
-		   case  KEY_DOWN_JOY_DOWN:
-				 if (g_DSO.ActiveCH == 1)
-				 {
-					if (g_DSO.AdjustMode == 0)
-					{
-						Adjust_DSO(1, 0);
-					}
-					else
-					{
-						g_DSO.Ch1VOffset += 5;
-					}
-				 }
-				 else
-				 {
-					if (g_DSO.AdjustMode == 0)
-					{
-							Adjust_DSO(2, 0);
-					}
-					else
-					{
-							g_DSO.Ch2VOffset += 5;
-					}
-				  }
-				 if (g_DSO.HoldEn == 1)
-				 	{
-				 	   Display_DSO();
-				 	}
-				 break;
-
-			default:
-				 break;
+			 }
+			 if (g_DSO.HoldEn == 1){
+				 Display_DSO();
+			 }
+			 statusJoyUp = 0;
 		 }
-	  }
+	 } else statusJoyUp = 1;
+	 if(KeyJoyDownPressed()) {
+		 if(statusJoyDown) {
+			 if (g_DSO.ActiveCH == 1){
+				if (g_DSO.AdjustMode == 0){
+					Adjust_DSO(1, 0);
+				} else {
+					g_DSO.Ch1VOffset += 5;
+				}
+			 } else {
+				if (g_DSO.AdjustMode == 0){
+						Adjust_DSO(2, 0);
+				} else {
+						g_DSO.Ch2VOffset += 5;
+				}
+			  }
+			 if (g_DSO.HoldEn == 1){
+				 Display_DSO();
+			 }
+			 statusJoyDown = 0;
+		 }
+	 } else statusJoyDown = 1;
+	 if(KeyJoyLeftPressed()) {
+		 if(statusJoyLeft) {
+			 if (g_DSO.HoldEn == 0){
+				 Dec_SampleFreq();
+				if (g_DSO.HoldEn == 1){
+					Display_DSO();
+				}
+			 }
+			 statusJoyLeft = 0;
+		 }
+	 } else statusJoyLeft = 1;
+	 if(KeyJoyRightPressed()) {
+		 if(statusJoyRight) {
+			 if (g_DSO.HoldEn == 0){
+				 Inc_SampleFreq();
+				 if (g_DSO.HoldEn == 1){
+					 Display_DSO();
+				 }
+			 }
+			 statusJoyRight = 0;
+		 }
+	 } else statusJoyRight = 1;
+	 if(KeyJoySelPressed()) {
+		 if(statusJoySel) {
+			 if (g_DSO.AdjustMode == 0){
+				 g_DSO.AdjustMode = 1;
+			 } else {
+				 g_DSO.AdjustMode = 0;
+			 }
+			 if (g_DSO.HoldEn == 1) {
+				 Display_DSO();
+			 }
+			 statusJoySel = 0;
+		 }
+	 } else statusJoySel = 1;
+	 if(KeyJoyTamperPressed()) {
+		 if(statusJoyTamper) {
+			 if (g_DSO.ActiveCH == 1){
+				 g_DSO.ActiveCH = 2;
+			 } else {
+				 g_DSO.ActiveCH = 1;
+			 }
+			 if (g_DSO.HoldEn == 1){
+				 Display_DSO();
+			 }
+			 statusJoyTamper = 0;
+		 }
+	 } else statusJoyTamper = 1;
+	 if(KeyJoyWakeupPressed()) {
+		 if(statusJoyWakeup) {
+
+			 statusJoyWakeup = 0;
+		 }
+	 } else statusJoyWakeup = 1;
+	 if(KeyJoyUserPressed()) {
+		 if(statusJoyUser) {
+			 if( g_DSO.HoldEn == 0 ){
+				 g_DSO.HoldEn = 1;
+				 g_DSO.TimeBaseIdHold = g_DSO.TimeBaseId;
+				  Stop_ADC();
+			 } else {
+				 g_DSO.HoldEn = 0;
+				 Start_ADC();
+			 }
+			 if(g_DSO.HoldEn == 1){
+				 Display_DSO();
+			 }
+			 statusJoyUser = 0;
+		 }
+	 } else statusJoyUser = 1;
   }
 }
 

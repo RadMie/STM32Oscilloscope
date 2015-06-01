@@ -1,44 +1,13 @@
-/****************************************Copyright (c)****************************************************
-**                                      
-**                                 http://www.powermcu.com
-**
-**--------------File Info---------------------------------------------------------------------------------
-** File name:               fsmc_sram.c
-** Descriptions:            The FSMC SRAM application function
-**
-**--------------------------------------------------------------------------------------------------------
-** Created by:              AVRman
-** Created date:            2011-2-16
-** Version:                 v1.0
-** Descriptions:            The original version
-**
-**--------------------------------------------------------------------------------------------------------
-** Modified by:             
-** Modified date:           
-** Version:                 
-** Descriptions:            
-**
-*********************************************************************************************************/
-
-/* Includes ------------------------------------------------------------------*/
 #include "fsmc_sram.h"
 #include <stdio.h>
 
-/* Private define ------------------------------------------------------------*/
-
-
-
-static FSMC_NORSRAMInitTypeDef  FSMC_NORSRAMInitStructure;	 /* �ں����ڶ�������Ī������Ĵ��� */
+static FSMC_NORSRAMInitTypeDef  FSMC_NORSRAMInitStructure;
   
 /*******************************************************************************
 * Function Name  : FSMC_SRAM_Init
 * Description    : Configures the FSMC and GPIOs to interface with the SRAM memory.
 *				   This function must be called before any write/read operation
 *				   on the SRAM.
-* Input          : None
-* Output         : None
-* Return         : None
-* Attention		 : None
 *******************************************************************************/
 void FSMC_SRAM_Init(void)
 { 
@@ -122,10 +91,6 @@ void FSMC_SRAM_Init(void)
 /*******************************************************************************
 * Function Name  : FSMC_SRAM_Test
 * Description    : test SRAM
-* Input          : None
-* Output         : None
-* Return         : None
-* Attention		 : None
 *******************************************************************************/
 void FSMC_SRAM_Test(void)
 {
@@ -140,10 +105,7 @@ void FSMC_SRAM_Test(void)
 	
 	for( addr = SRAM_BLANK1_START_ADDR; addr < SRAM_BLANK1_END_ADDR + 1 ; addr += 4 )
 	{
-		if (*(uint32_t *)addr != addr)
-		{
-			break;
-		}
+		if (*(uint32_t *)addr != addr) break;
 	}
 			
 	if( addr >= SRAM_BLANK1_END_ADDR + 1 )
@@ -164,10 +126,7 @@ void FSMC_SRAM_Test(void)
 	
 	for( addr = SRAM_BLANK2_START_ADDR; addr < SRAM_BLANK2_END_ADDR + 1 ; addr += 4 )
 	{
-		if (*(uint32_t *)addr != addr)
-		{
-			break;
-		}
+		if (*(uint32_t *)addr != addr) break;
 	}
 			
 	if( addr >= SRAM_BLANK2_END_ADDR + 1 )
@@ -178,41 +137,4 @@ void FSMC_SRAM_Test(void)
 	{
 		UART_SendStr("SRAM BLANK2 error. Address = 0x%08X, Read = 0x%08X, Expected = 0x%08X \r\n", addr, *(uint32_t *)addr, addr);
 	}
-
 }
-
-void FSMC_SRAM_Test1(void) {
-
-	UART_SendStr("SRAM BLANK1....test1..\r\n");
-
-	__IO uint32_t addr;
-	addr = SRAM_BLANK1_START_ADDR;
-
-	*(uint32_t *)addr = 1;
-
-	addr+=4;
-
-	*(uint32_t *)addr = 0;
-
-	addr = SRAM_BLANK1_START_ADDR;
-
-	if (*(uint32_t *)addr == 100)
-	{
-		UART_SendStr("test1..ok.1..\r\n");
-	} else {
-		UART_SendStr("test1..err.1..\r\n");
-	}
-
-	addr+=4;
-
-	if (*(uint32_t *)addr == 0)
-	{
-		UART_SendStr("test1..ok.2..\r\n");
-	} else {
-		UART_SendStr("test1..err.2..\r\n");
-	}
-}
-
-/*********************************************************************************************************
-      END FILE
-*********************************************************************************************************/

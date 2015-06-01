@@ -8,12 +8,6 @@
 #define ADC3_DR_Address    ((uint32_t)0x40013C4C)
 
 #define	SAMPLE_COUNT	   (4 * 1024)
-
-#define GUI_LIGHTYELLOW   0xFFE0
-#define GUI_LIGHTMAGENTA  0xF81F
-#define GUI_WHITE         0xFFFF
-#define GUI_BLACK         0x0000
-#define GUI_MAGENTA       0x051F
 	
 typedef struct
 {

@@ -1,9 +1,9 @@
 #include "stm32f10x.h"
+#include <string.h>
 #include "dso.h"
-#include "Key.h"
 #include "tft.h"
 #include "systick.h"
-#include <string.h>
+#include "key.h"
 #include "fsmc_sram.h"
 
 void UART_SendChar(char ch);
@@ -18,20 +18,16 @@ int main(void)
 	LED_Configuration();
 	FSMC_SRAM_Init();
 	FSMC_SRAM_Test();
-	FSMC_SRAM_Test1();
-
-	//uint16_t test[76800];
 
 	delay_init();
 	TFT_Init();
 	TFT_SET_BACKLIGHT(255);
 	TFT_CLEAR(Black);
 
-	Key_Initializtion();
+	KEY_Configuration();
 	DSO_Configuration();
 	DSO_Initializtion();
 
-	FSMC_SRAM_Test1();
 	for(;;) {
 
 		DSO_Run();
