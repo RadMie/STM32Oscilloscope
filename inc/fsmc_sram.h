@@ -10,6 +10,5 @@
 #define SRAM_BLANK2_END_ADDR	((uint32_t)0x681FFFFF)
 
 void FSMC_SRAM_Init(void);
-void FSMC_SRAM_Test(void);
 
 #endif /* __FSMC_SRAM_H */

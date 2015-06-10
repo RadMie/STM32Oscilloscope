@@ -7,6 +7,7 @@
 #include "tft.h"
 #include "systick.h"
 #include "fsmc_sram.h"
+#include "processing.h"
 
 #define DSO_VER	 "V0.1"
 #define ATT_COUNT	6	  /* g_DSO.Ch1Attenuation = 23 : (1) 28 === 1V  (1:1) */
@@ -395,6 +396,7 @@ void Inc_SampleFreq(void)
   }
 													 
   g_DSO.TimeBase = 	g_TimeTable[g_DSO.TimeBaseId];
+  //g_DSO.TimeBase+=10;
   g_DSO.SampleFreq = 25000000 / g_DSO.TimeBase;
 
   DSO_SampleRate(g_DSO.SampleFreq);
@@ -411,6 +413,7 @@ void Dec_SampleFreq(void)
 	 g_DSO.TimeBaseId--;
   }													 
   g_DSO.TimeBase = g_TimeTable[g_DSO.TimeBaseId];
+  //g_DSO.TimeBase-=10;
   g_DSO.SampleFreq = 25000000 / g_DSO.TimeBase;
 
   DSO_SampleRate(g_DSO.SampleFreq);
@@ -531,7 +534,7 @@ void DSO_Run(void)
   delay_ms(100);
   for(;;)
   {
-	 if ( g_DSO.HoldEn == 0 )
+	if ( g_DSO.HoldEn == 0 )
 	{
 		Stop_ADC();
 		Display_DSO();
@@ -720,6 +723,10 @@ void _DrawDSO(void)
 		 iTemp = 20;
 	 }
 	 Param.CH1y[index] = iTemp;
+	 if(index) {
+		 PROCESSING_SendString(":");
+	 }
+	 PROCESSING_SendInt(iTemp);
 
 	 iTemp = g_DSO.Ch2VOffset - (int16_t)(( g_DSO.Ch2Buf[index + 1] - 2070 ) * 10) / g_DSO.Ch2Attenuation;
 
@@ -730,7 +737,10 @@ void _DrawDSO(void)
 		 iTemp = 20;
 	 }
 	 Param.CH2y[index] = iTemp;
+	 PROCESSING_SendString(":");
+	 PROCESSING_SendInt(iTemp);
 
   }
+  PROCESSING_SendString("\n");
   _Draw(&Param);
 }
